@@ -1,0 +1,10 @@
+redis what why how
+
+what是什么
+	
+why为什么使用
+
+how如何使用
+
+----------------
+window压缩包解压直接用

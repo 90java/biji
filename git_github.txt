@@ -1,0 +1,189 @@
+0.安装目录
+D:\Program Files\Git\cmd
+工作区（写代码的地方）---》git add--->暂存区（临时存储代码的地方）---》git commit--->本地库（本地git库存放历史版本的地方）
+----------
+代码托管中心(维护远程库)
+局域网
+	gitlab
+外网
+	github
+	码云
+----------
+
+团队内协作
+	本地库--->push--->远程库
+	远程库--->pull--->本地库
+	远程库--->clone--->本地库
+
+跨团队协作
+	团队内远程库*	--->fork --->	团队外远程库
+	团队外远程库	--->clone--->	团队外本地库
+	团队外本地库	--->push--->	团队外远程库
+	团队外远程库	--->pull request--->审核--->merge--->团队内远程库*
+git 命令行操作
+	本地库初始化
+		git init	初始化空的git资源库在该当前目录 会创建一个隐藏的.git文件  存放本地库相关的子目录和文件。
+	设置签名
+		用户名：
+		email地址：
+		区别不同开发人员
+		和登陆远程哭的账号密码无关
+		
+		命令：
+			项目级别/仓库级别 仅在但概念本地库范围有效
+				git config user.name lixiaofeng
+				git config user.email lixiaofengqq.com
+				信息保存目录 .git/config
+			系统用户级别：登陆当前操作用户范围（多了 --global）
+				git config --global user.name lixiaofeng_global
+				git config --global user.email lixiaofeng_global@qq.com	
+				信息保存目录 当前家目录.gitconfig
+		优先级：
+			就近原则	
+			如果只有系统用户级别 那就以系统级别有限
+			二者都没有不允许
+	查看状态(查看工作区、暂存区状态)
+		git status
+		
+	添加（将工作区的“新建/修改”添加到暂存区）
+		git add	[file]
+	删除暂存区
+		git rm --cached [file]
+	提交（暂存区提交到本地库）
+		git commit [file]
+
+		git commit -m "注释" [file]
+版本的前进后退
+	HEAD就是指针
+
+
+	查看历史纪录
+		git log
+		 git log --pretty=oneline  查看显示一行行
+		git log --oneline
+		git reflog
+	基于索引值操作	
+		 git reset --hard [索引版本号]  常用
+	使用^ 只能后退
+		git reset --hard HEAD^
+		一个^表示后退一步
+	使用~ 只能后退
+		git reset --hard HEAD~N
+比较文件差异
+	git diff [文件名]
+		工作区和暂存区比较
+	git diff [版本号] [文件名]
+		将工作区和额历史版本进行比较。
+
+分支：
+	查看分支
+		git branch -v
+	创建分支
+		git branch [branchname]
+	切换分支
+		git checkout [branchname]
+	合并分支
+		1.切换到接受修改的分支上
+		git checkout [分支名]
+		2.执行meger命令
+		git merge [分支名]
+	
+	冲突解决
+		1.笔记文件 删除特殊符号
+		2.修改抽头
+		3.git add [文件名]
+		4.解决完成冲突后 使用git commit -m ""	
+		
+关于本地库与远程库的连接
+	先建一个本地库，init add commit
+	github创建远程库
+
+	copy远程库地址
+
+	远程库肯定有一个连接
+	git remote -v 查看所有的远程地址别名
+	git remote add [别名] [远程地址]
+	本地修改推送到远程库
+	git push -u [别名] [分支名]
+
+	加入其它团伙操作。
+	
+	git clone [远程地址]
+		效果：
+			完整的把远程库下载到本地
+			创建origin远程地址
+			初始化本地库
+		
+	管理员邀请加入团队
+		在远程仓库进行邀请
+		选择项目资源库--> setting-->collaboration --->添加新的同学进来，使用账号add collaboration-->copy invite link 
+		-->被邀请人登录账号后再浏览器访问该链接并同意即可将该同学加入到该项目中，该同学也就有了操作远程库的权限了。
+
+注意点：
+	关于在git bash 页面输入用户名密码 这是windows的凭证管理器
+	控制面板\所有控制面板项\凭据管理器 可以进行删除凭证换账号登录
+	
+	新添加队友push代码到远程库了
+	git push [别名] [分支名]
+	接下来
+	另外同学可以拉取代码
+	fetch抓取 
+	pull fetch读取操作不需要权限
+
+	操作：pull=fetch+merge
+		
+		git fetch [远程地址别名] [远程分支名]
+		git merge [远程地址别名/远程分支名]
+		git pull  [远程地址别名] [远程分支名]
+	
+
+解决冲突
+	执行git push [别名] [远程分支名] 如果有冲突就会报错
+
+	接下来的操作：
+		1.先执行git pull  [远程地址别名] [远程分支名]
+		2.在解决冲突
+		3.git add 文件
+		4.git commit -m "注释"    这里不需要带修改文件名 直接提交
+		5.git push [别名] [远程分支名]
+
+跨团队操作
+	以第三方团队 
+		1.fork
+		2.clone
+		3.vi 
+		3.add
+		4.commit
+		5.push
+		6.github 上点 pull request--->new pull request ---> create new pull request 写一些描述去审核
+		7.团队老大审核 在点pull request  可以进行对话
+		8.代码审核
+		9.代码没问题 点merge pull request 合并代码 confirm merge
+
+
+SSH
+	产生原因  免密登录 可以每次连接远程仓库就不要输入密码
+	访问地址也为ssh地址 不是http 地址了
+
+	ssh-keygen -t rsa -C 邮箱地址
+	注意：这里-C 这个参数是大写的 C
+	会生成一个公钥一个秘钥  复制公钥到ssh and gpg keys 中 title 随便写
+	客户端测试
+		copy ssh 地址
+		起别名 remote
+		push
+--------------
+
+eclipse idea 操作
+
+
+GitHub 官网样例文件
+https://github.com/github/gitignore
+https://github.com/github/gitignore/blob/master/Java.gitignore
+ 编辑本地忽略配置文件，文件名任意	
+
+
+
+---------------
+
+

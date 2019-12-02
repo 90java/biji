@@ -1,0 +1,18 @@
+1.java多线程
+	1.1多线程的实现方式
+		继承Thread
+		实现runnable
+		实现线程池
+		实现callable接口(juc)
+	1.2线程同步
+		思哥奈z
+		Syn (方法、代码块)
+		Lock unlock  手动锁
+	1.3线程通讯
+		wait() notify()	自动唤醒
+
+		Lock.condition 手动唤醒
+	
+	1.4 线程/进程
+		
+	1.5 线程 操作run 资源类
