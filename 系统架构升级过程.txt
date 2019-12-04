@@ -1,0 +1,82 @@
+先考虑应用服务器压力  在考虑数据库压力
+
+1.单机集中构建网站
+	一台服务器(tomcat)+一个数据库(mysql/oracle)
+2.应用服务器增加
+	多台服务器(tomcat集群)+一个数据库(mysql/oracle)
+	
+
+	产生的问题：
+		1）用户请求怎么转发到应用服务器
+		负载均衡服务器 nginx  F5(硬负载均衡 有钱人用的)
+		2）如何转发
+			2.1）轮询
+			2.2）随机
+			2.3）源地址哈希（对客户端ip哈希计算值，对服务器数量进行取模，得到的结果就是要客户端要访问服务器的序号，
+			当客户端列表不变时，每次指向的都是同一台服务器）
+			2.4）加权轮询法（不同机器的权重不一样，配置好的权重大，配置低的可以权重小，按权重顺序执行）
+			2.5）加权随机法（通加权轮询法  不同的是不是按顺序执行，权重大的访问机会大）
+			2.6）最小连接数（针对服务器连接数小的那台进行访问）
+			-----------
+			nginx负载均衡算法
+			1.轮询（默认） 如果服务器down 则自动剔除
+			2.weight （加权随机法）
+			upstream bakend {  
+			  server 192.168.0.14 weight=10;  
+			  server 192.168.0.15 weight=10;  
+			}
+			3.ip_hash 每个请求按访问ip的hash结果分配，这样每个访客固定访问一个后端服务器，可以解决session的问题。
+			upstream bakend {  
+			  ip_hash;  
+			  server 192.168.0.14:88;  
+			  server 192.168.0.15:80;  
+			}
+			4.air（第三方）按后端服务器的响应时间来分配请求，响应时间短的优先分配。
+			upstream backend {  
+			  server server1;  
+			  server server2;  
+			  fair;  
+			}
+			5.url_hash（第三方）按访问url的hash结果来分配请求，使每个url定向到同一个后端服务器，后端服务器为缓存时比较有效。
+			例：在upstream中加入hash语句，server语句中不能写入weight等其他的参数，hash_method是使用的hash算法。
+			upstream backend {  
+			  server squid1:3128;  
+			  server squid2:3128;  
+			  hash $request_uri;  
+			  hash_method crc32;  
+			}
+			tips:
+			upstream bakend{#定义负载均衡设备的Ip及设备状态  
+			  ip_hash;  
+			  server 127.0.0.1:9090 down;  
+			  server 127.0.0.1:8080 weight=2;  
+			  server 127.0.0.1:6060;  
+			  server 127.0.0.1:7070 backup;  
+			}
+			在需要使用负载均衡的server中增加
+			proxy_pass http://bakend/;
+			每个设备的状态设置为：
+
+			1.down 表示单前的server暂时不参与负载
+			2.weight 默认为1.weight越大，负载的权重就越大。
+			3.max_fails ：允许请求失败的次数默认为1.当超过最大次数时，返回proxy_next_upstream 模块定义的错误
+			4.fail_timeout:max_fails次失败后，暂停的时间。
+			5.backup： 其它所有的非backup机器down或者忙的时候，请求backup机器。所以这台机器压力会最轻。
+			nginx支持同时设置多组的负载均衡，用来给不用的server来使用。
+			client_body_in_file_only：设置为On，可以讲client post过来的数据记录到文件中用来做debug。
+			client_body_temp_path：设置记录文件的目录，可以设置最多3层目录。
+			location：对URL进行匹配，可以进行重定向或者进行新的代理，负载均衡。
+		3.session问题(负载均衡下session失效)（参考：https://www.cnblogs.com/kevingrace/p/8144539.html）
+			1）session会话保持 （nginx haproxy）
+			 通过会话保持，负载均衡请求分发将每个客户端访问到同一台服务器
+			 会话保持的缺点：
+				1) 会话保持看似解决了Session同步的问题，但是却带来的一些其它方面的问题：
+				2）负载不均衡了：由于使用了Session保持，很显然就无法保证负载绝对的均衡。
+				3）没有彻底解决问题：如果后端有服务器宕机，那么这台服务器的Session丢失，被分配到这台服务请求的用户还是需要重新登录。
+			2）session会话复制 （Tomcat）
+			3）session会话共享 （memcached redis）
+
+		4.负载均衡服务器单点nginx挂了  nginx 如何保持高可用
+			nginx 主要功能：反向代理+动静分离+负载均衡
+			解决：nginx+应用服务器集群+HA
+			实现：LVS 实现负载均衡+使用keepalived 来实现HA

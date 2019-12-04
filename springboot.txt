@@ -1,0 +1,13 @@
+springboot Test
+如何进行springboot测试
+模拟http请求可以通过几种方式进行请求
+我所知道的几种方式
+1.最简单的方式 ：直接浏览器访问，不过这种方式带参数的请求不能访问
+2.java原生态URI方式进行访问
+3.httpclient
+4.工具调用soapui、postman
+
+
+
+------------
+既然使用的springboot，那么便用spring test进行测试。
