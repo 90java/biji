@@ -1,0 +1,35 @@
+1.关于java中的自动拆箱和自动装箱（since  1.5）
+	以int和Integer为例
+	1.1直接使用Integer进行赋值: Integer i = 2;
+		这里会触发自动装箱 会对2进行装箱调用Integer.valueOf(int i)方法，所以这段代码等于Integer i = Integer.valueOf(2);
+		注：关于Integer.valueOf(int i)方法。源码分析
+		    @HotSpotIntrinsicCandidate
+		    public static Integer valueOf(int i) {
+			if (i >= IntegerCache.low && i <= IntegerCache.high)	//IntegerCache.low:-128 IntegerCache.high：127；
+			    return IntegerCache.cache[i + (-IntegerCache.low)]; //IntegerCache.cache[] 这是个静态数组里面存放的为new Integer(-128)到new Integer(127)
+										//所以-128到127返回的对象是不变的。 所以该范围的值相同进行比较是true
+			return new Integer(i);					//范围之外的 直接new的，所以进行比较的是两个不同的对象。所以是false
+		    }
+	1.2关于int与Integer进行==比较: 2==new Integer(2);//Integer(int value)过时了 因为有自动装拆了。
+		分析：当比较时new Integer(2) 会自动拆箱调用intValue()返回int 然后进行基本类型的比较 基本类型不是放在堆中，所以比较的就是数值，所以此处为true
+		2==new Integer(2).intValue();
+	1.3关于Integer的equals方法和int比较：new Integer(2).equals(2)
+		这里会对2先进行装箱，对2进行装箱调用Integer.valueOf(int i)方法.
+		    public boolean equals(Object obj) {
+			if (obj instanceof Integer) {				//先进行判断是否为Integer类型  因为装箱所以true
+			    return value == ((Integer)obj).intValue();		//然后分别调用intValue()进行数值比较
+			}
+			return false;
+		    }
+	1.4关于比较过程中进行Integer算法运算后进行== ：
+		new Integer(2)==new Integer(1)+new Integer(1) 
+		算法运算会自动拆箱所以变成int与Integer比较 在对Integer进行拆箱 所以为true
+	1.5关于比较过程中进行Integer算法运算后进行equal 
+		new Integer(2).equals(new Integer(1)+new Integer(1)) //new Integer(1)+new Integer(1) 1.先拆箱 2.后装箱 在进行equal 3/比较类型4.initval 基本类型比较
+	1.6关于-128到127重新new 进行比较(不是通过装箱操作) false
+		重新new的对象所以为false
+	1.7其他	不同包装类型不能进行比较
+	1.8不同包装类型equal比较 false  因为equal 第一步判断就是类型
+	1.9不同包装类型进行运算后与包装类型equal
+	2.0基本类型之间比较要考虑类型提升问题
+	2.1基本类型与包装类型比较 会拆箱和类型提升比较
