@@ -1,10 +1,50 @@
 redis what why how
 
 what是什么
-	
+	是一个key-value存储系统，称为数据结构服务器，value可以是：字符串(String)、哈希map）、列表（list）、集合（sets）有序集合（sorted sets）。
+	特点：
+	速度快、持久化、支持多种数据结构、原子操作、多语言支持、主从复制、分片、可移植、
 why为什么使用
 
 how如何使用
 
 ----------------
 window压缩包解压直接用
+官网文档 https://redis.io/documentation
+
+中文网
+http://www.redis.com.cn/
+https://www.redis.net.cn/
+
+Redis架构
+分为客户端和服务端。
+
+服务端一般在服务器，可以配置成集群模式。
+客户端
+1.启动redis-cli 远程启动redis-cli -h host -pport -a password
+	
+2.使用操作编程语言操作。
+
+简单命令
+	字符串(String)、
+		SET KEY VALUE 设置字符串
+		GET KEY		获取字符串
+	哈希（map）、
+		HMSET KEY FILED1 VALUE1 [FILED2 VALUE2 ...] 设置属性
+		HGET KEY [FILED]	获得对象一个属性
+		HGETALL KEY    获得对象所有属性
+
+	列表（list）、
+		lpush key value
+		lrange key start stop
+	集合（sets）、
+		sadd key member [member ...]
+		smembers key
+	有序集合（sorted sets）。
+		zadd key [NX|XX] [CH] [INCR] score member [score member ...]
+		zrangebyscore key min max [WITHSCORES] [LIMIT offset count]
+
+	
+	获得所有配置信息
+		config get *
+---------
