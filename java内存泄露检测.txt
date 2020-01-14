@@ -1,0 +1,32 @@
+本文通过对虚拟机监控
+使用工具mat
+
+参考文章：
+获取jvm的堆转储文件 
+	https://blog.csdn.net/deniro_li/article/details/99694757
+利用利用内存分析工具（Memory Analyzer Tool，MAT）分析java项目内存泄露 
+	https://blog.csdn.net/wanghuiqi2008/article/details/50724676
+windows+linux下如何使用Memory Analyzer (MAT)进行内存分析（linux+dump+内存分析工具+jmap+jstack）
+	https://blog.csdn.net/zhang_xiaomeng/article/details/80819391
+内存泄漏检测分析工具MAT（Memory Analyzer Tool）的使用
+	https://blog.csdn.net/alcoholdi/article/details/55667078
+Eclipse Memory Analyzer入门学习笔记
+	https://blog.csdn.net/cc907566076/article/details/79108782
+--------------
+学习目标
+	服务上内存使用率不断增加，分析内存泄露地方
+
+
+
+分析内存泄露
+	--(前提)->
+		使用mat工具
+			---(前提)--->
+				需要堆转储文件（dump）
+					---(前提)--->
+						获得堆转储文件
+							-->1.通过jmap(java内存映像工具，该命令用于生成堆转储快照)获得.
+								(jmap -dump:format=b,file=<filename.hprof> <pid>) pid 可通过jps获得进程id
+							-->2.通过添加-XX:+HeapDumpOnOutOfMemmoryError 可以在虚拟机OOM异常时自动生成dump文件
+							-->3.通过在linux系统下通过kill -3 命令发送进程退出信号吓唬下虚拟机，也能拿到dump文件
+							-->4.jdk自带 java/bin/jconsole.exe
